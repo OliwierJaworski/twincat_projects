@@ -14,7 +14,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{7C283CD0-689F-4ABB-AFF2-3E3A94895FE1}" Name="mqtt_data_gathering" PrjFilePath="mqtt_data_gathering\mqtt_data_gathering.plcproj" TmcFilePath="mqtt_data_gathering\mqtt_data_gathering.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="mqtt_data_gathering\mqtt_data_gathering.tmc" TmcHash="{7C77AAC2-0384-F9B1-5A77-207CF670D437}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="mqtt_data_gathering\mqtt_data_gathering.tmc" TmcHash="{8864E7D0-CA3E-585C-008A-02180327EDF7}">
 					<Name>mqtt_data_gathering Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>

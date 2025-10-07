@@ -9,7 +9,7 @@ VAR
 	W_data 			: weather_data;
 	fbMqttClient: INT;
 	fbMessageQueue: INT;
-	fbTimer : TON := (PT:=T#10S);
+	fbTimer : TON := (PT:=T#3S);
 	refMqtt: INT;
 	Execute: INT;
 	
@@ -85,11 +85,15 @@ IF sState = DevStates.PROC THEN
 	END_IF
 	
 	
+		
 	IF W_data.uLocIndex > 0 THEN
-		bGetOpenWeatherMap := TRUE;
+		
 		IF fbHttpClientOpenWeatherMap.bConfigured THEN
 		fbHttpGetOpenWeatherMap(bSend := bGetOpenWeatherMap, fbClient := fbHttpClientOpenWeatherMap, refState := sState, W_data := W_data);
-		END_IF
+		END_IF	
+		bGetOpenWeatherMap := TRUE;
+		
+		
 		fbHttpClientOpenWeatherMap.Execute();
 		IF W_data.allow_processing <> FALSE THEN
 			fbJsonSAX.StartObject();
@@ -111,6 +115,7 @@ IF sState = DevStates.PROC THEN
 			W_data.allow_processing := FALSE;
 			W_data.uLocIndex := W_data.uLocIndex -1;
 		END_IF
+		
 	ELSE
 		fbJsonSAX.EndArray(); 
 		fbJsonSAX.EndObject();
@@ -118,8 +123,10 @@ IF sState = DevStates.PROC THEN
 		fbJsonSAX.CopyDocument(W_data.sJsonParsed, SIZEOF(W_data.sJsonParsed));
 		sState := DevStates.SENDING;
 	END_IF
-	
+		
 END_IF
+
+
 
 (* SEND RESULTING JSON OBJECT *)
 IF sState = DevStates.SENDING THEN
@@ -161,11 +168,14 @@ END_IF
       <LineId Id="308" Count="1" />
       <LineId Id="264" Count="4" />
       <LineId Id="282" Count="0" />
+      <LineId Id="389" Count="0" />
       <LineId Id="324" Count="0" />
+      <LineId Id="386" Count="0" />
+      <LineId Id="391" Count="1" />
+      <LineId Id="390" Count="0" />
       <LineId Id="357" Count="0" />
-      <LineId Id="362" Count="1" />
-      <LineId Id="325" Count="0" />
-      <LineId Id="358" Count="0" />
+      <LineId Id="383" Count="1" />
+      <LineId Id="375" Count="0" />
       <LineId Id="329" Count="0" />
       <LineId Id="332" Count="0" />
       <LineId Id="336" Count="12" />
@@ -174,6 +184,7 @@ END_IF
       <LineId Id="330" Count="0" />
       <LineId Id="364" Count="0" />
       <LineId Id="331" Count="0" />
+      <LineId Id="374" Count="0" />
       <LineId Id="349" Count="0" />
       <LineId Id="351" Count="0" />
       <LineId Id="350" Count="0" />
@@ -181,6 +192,8 @@ END_IF
       <LineId Id="326" Count="0" />
       <LineId Id="359" Count="0" />
       <LineId Id="321" Count="0" />
+      <LineId Id="385" Count="0" />
+      <LineId Id="376" Count="0" />
       <LineId Id="320" Count="0" />
       <LineId Id="236" Count="1" />
       <LineId Id="281" Count="0" />

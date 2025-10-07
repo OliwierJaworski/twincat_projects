@@ -8,13 +8,13 @@ STRUCT
 	bConnect : BOOL := TRUE;
 	
 	(* published message *)
-	sTopicPub : STRING(255) := 'testtopic/out';
+	sTopicPub : STRING(255) := 'PXLcommunicationTX_eval';
 	sPayloadPub : STRING(255);
 	
 	
 	(* received message *)
 	bSubscribed : BOOL;
-	sTopicSub : STRING(255) := 'testtopic/in';
+	sTopicSub : STRING(255) := 'PXLcommunicationRX_eval';
 	{attribute 'TcEncoding':='UTF-8'}
 	sTopicRcv : STRING(255);
 	{attribute 'TcEncoding':='UTF-8'}

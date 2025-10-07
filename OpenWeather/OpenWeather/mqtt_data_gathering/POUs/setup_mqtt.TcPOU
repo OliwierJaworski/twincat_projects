@@ -15,11 +15,11 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[refMqtt.bSetParameter := FALSE;
-refMqtt.fbMqttClient.sHostName:= '3af27b0972ae4f52a828b3b86b9213d0.s1.eu.hivemq.cloud';
+refMqtt.fbMqttClient.sHostName:= 'broker.hivemq.com';
 refMqtt.fbMqttClient.nHostPort:= 8883;
 refMqtt.fbMqttClient.sClientId:= 'test_user';
-refMqtt.fbMqttClient.sUserName:= 'test_user';
-refMqtt.fbMqttClient.sUserPassword:= 'Test_user01!'; 
+//refMqtt.fbMqttClient.sUserName:= 'test_user';
+//refMqtt.fbMqttClient.sUserPassword:= 'Test_user01!'; 
 refMqtt.fbMqttClient.nKeepAlive:= 60;
 refMqtt.fbMqttClient.sTopicPrefix:= ''; 
 refMqtt.fbMqttClient.stTLS.bNoServerCertCheck :=  TRUE;

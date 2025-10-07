@@ -39,45 +39,13 @@ VAR
     jsonObj     : SJsonValue;	
 	
 	sUri        : STRING(256);
-	key        : STRING(256) :='';
+	key        : STRING(256) :='372d7e89d868c595e333ad8eba2a8dc5';
+	//key        : STRING(256) :='';
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[RisingEdge(CLK := bSend);
 
-CASE nState OF
-3:
-	jsonDoc := fbJson.ParseDocument(stest);
-    IF jsonDoc <> 0 THEN
-		// --- city name ---
-		IF fbJson.HasMember(jsonDoc, 'name') THEN
-			jsonObj := fbJson.FindMember(jsonDoc, 'name');
-			W_data.city := fbJson.GetString(jsonObj);
-		END_IF;
-	
-		// --- city id ---
-		IF fbJson.HasMember(jsonDoc, 'id') THEN
-			W_data.id := fbJson.GetUint(fbJson.FindMember(jsonDoc, 'id')); // numeric type = LREAL, cast ok
-		END_IF;
-	
-		// --- main temperatures ---
-		IF fbJson.HasMember(jsonDoc, 'main') THEN
-			jsonObj := fbJson.FindMember(jsonDoc, 'main');
-			W_data.temp     := fbJson.GetDouble(fbJson.FindMember(jsonObj, 'temp'));
-			W_data.temp_min := fbJson.GetDouble(fbJson.FindMember(jsonObj, 'temp_min'));
-			W_data.temp_max := fbJson.GetDouble(fbJson.FindMember(jsonObj, 'temp_max'));
-		END_IF;
-	
-		// --- sys (sunrise/sunset) ---
-		IF fbJson.HasMember(jsonDoc, 'sys') THEN
-			jsonObj := fbJson.FindMember(jsonDoc, 'sys');
-			W_data.sunrise := fbJson.GetUint(fbJson.FindMember(jsonObj, 'sunrise'));
-			W_data.sunset  := fbJson.GetUint(fbJson.FindMember(jsonObj, 'sunset'));
-		END_IF;
-	END_IF
-	
-	W_data.allow_processing := TRUE;
-	
-		
+CASE nState OF		
 0:	
 	IF RisingEdge.Q THEN 
 		sUri := '/data/2.5/weather?q=';
@@ -89,7 +57,6 @@ CASE nState OF
 			nReqCount := nReqCount +1;
 			bBusy := TRUE;
 			bError := FALSE;
-			bSend := FALSE;
 		END_IF					
 	END_IF
 1:
@@ -139,6 +106,7 @@ CASE nState OF
 				nResCount := nResCount +1;			
 			nState := 0;
 			bBusy := FALSE;
+			
 			IF bError THEN
 				nErrCount := nErrCount +1;
 			END_IF
@@ -151,28 +119,17 @@ END_CASE
     <LineIds Name="FB_Rest_OpenWeather">
       <LineId Id="107" Count="0" />
       <LineId Id="344" Count="0" />
-      <LineId Id="108" Count="0" />
-      <LineId Id="160" Count="0" />
-      <LineId Id="162" Count="0" />
-      <LineId Id="226" Count="2" />
-      <LineId Id="251" Count="0" />
-      <LineId Id="229" Count="21" />
-      <LineId Id="166" Count="0" />
-      <LineId Id="256" Count="0" />
-      <LineId Id="301" Count="0" />
-      <LineId Id="252" Count="0" />
-      <LineId Id="167" Count="0" />
-      <LineId Id="109" Count="1" />
+      <LineId Id="108" Count="2" />
       <LineId Id="340" Count="3" />
-      <LineId Id="111" Count="4" />
-      <LineId Id="345" Count="0" />
-      <LineId Id="116" Count="11" />
+      <LineId Id="111" Count="16" />
       <LineId Id="142" Count="0" />
       <LineId Id="306" Count="29" />
       <LineId Id="305" Count="0" />
       <LineId Id="336" Count="0" />
       <LineId Id="143" Count="1" />
-      <LineId Id="147" Count="3" />
+      <LineId Id="147" Count="1" />
+      <LineId Id="346" Count="0" />
+      <LineId Id="149" Count="1" />
       <LineId Id="303" Count="0" />
       <LineId Id="151" Count="1" />
       <LineId Id="337" Count="0" />
