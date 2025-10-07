@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="connect_mqtt" Id="{4f4ba1f2-ce14-47f6-a82f-9cea8f3d467b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION connect_mqtt : DevStates
+VAR_INPUT
+	M_data : REFERENCE TO mqtt_data;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[M_data.fbMqttClient.Execute(M_data.bConnect);
+IF M_data.fbMqttClient.bError THEN
+	// add your error logging here
+	M_data.hrErrorOccurred := M_data.fbMqttClient.hrErrorCode;
+	connect_mqtt :=  DevStates.ERR;
+	RETURN;
+END_IF
+
+IF M_data.fbMqttClient.bConnected THEN
+	IF NOT M_data.bSubscribed THEN
+		M_data.bSubscribed := M_data.fbMqttClient.Subscribe(sTopic:=M_data.sTopicSub, eQoS:=TcIotMqttQos.AtMostOnceDelivery);
+		IF M_data.fbMqttClient.bError THEN
+			// add your error logging here
+			M_data.hrErrorOccurred := M_data.fbMqttClient.hrErrorCode;
+			connect_mqtt :=  DevStates.ERR;
+			RETURN;
+		END_IF
+		connect_mqtt := DevStates.RECEIVING;
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="connect_mqtt">
+      <LineId Id="9" Count="18" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="MAIN" Id="{61b98573-aebc-4eb9-ab85-42381f008926}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	btimeout 		: BOOL;
+	sState 			: DevStates;
+	M_data			: mqtt_data;
+	W_data 			: weather_data;
+	fbMqttClient: INT;
+	fbMessageQueue: INT;
+	fbTimer : TON := (PT:=T#10S);
+	refMqtt: INT;
+	Execute: INT;
+	
+	bGetOpenWeatherMap 				: BOOL; 
+
+	fbHttpClientOpenWeatherMap		: FB_IotHttpClient :=(sHostName := 'api.openweathermap.org',
+								  	bKeepAlive := TRUE,	tConnectionTimeout := T#10S);
+
+	fbHttpGetOpenWeatherMap			: FB_Rest_OpenWeather;
+	
+	fbJsonSAX 						: FB_JsonSaxWriter;
+	bSAXheader						: BOOL :=FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* ERROR HANDLING*)
+IF sState = DevStates.ERR THEN
+	// Very high level error handling will happen here
+END_IF
+
+(* PROCESS MEMBER SETUP *)
+IF sState = DevStates.NOOP THEN
+	sState := setup_mqtt(refMqtt := M_data, refUser := W_data, refState := sState);
+	sState := DevStates.RECEIVING;
+END_IF
+
+(* FETCH DATA UNTIL TIMEOUT *)
+IF sState = DevStates.RECEIVING THEN
+	connect_mqtt(M_data := M_data);
+	IF  W_data.uLocIndex <> 0  THEN
+		//only start the timer if some data has been received and waiting for timeout
+		fbTimer(IN:=TRUE);
+	END_IF
+	
+	IF M_data.fbMessageQueue.nQueuedMessages > 0 THEN
+		IF M_data.fbMessageQueue.Dequeue(fbMessage:=M_data.fbMessage) THEN
+			M_data.fbMessage.GetTopic(pTopic:=ADR(M_data.sTopicRcv), nTopicSize:=SIZEOF(M_data.sTopicRcv) );
+			M_data.fbMessage.GetPayload(pPayload:=ADR(M_data.sPayloadRcv), nPayloadSize:=SIZEOF(M_data.sPayloadRcv), bSetNullTermination:=TRUE);
+			IF  W_data.uLocIndex <= GVL.MAX_SIZE  THEN
+                location_PushBack(refdata := W_data, refinput := M_data.sPayloadRcv);
+				fbTimer(IN := FALSE);
+			END_IF;
+		END_IF
+	END_IF
+	IF fbTimer.Q THEN
+		//get value from string and push back into array.
+		fbTimer(IN:=FALSE);
+		sState := DevStates.PROC;
+	END_IF
+END_IF
+
+(* FETCH DATA FROM OPENWEATHER *)
+IF sState = DevStates.PROC THEN
+	IF NOT bSAXheader THEN
+		fbJsonSAX.StartObject();
+		fbJsonSAX.AddKey('user');
+			fbJsonSAX.StartObject();
+				fbJsonSAX.AddKey('id');
+				fbJsonSAX.AddDint(W_data.student_id);
+				fbJsonSAX.AddKey('last');
+				fbJsonSAX.AddString(W_data.last);
+				fbJsonSAX.AddKey('first');
+				fbJsonSAX.AddString(W_data.first);
+			fbJsonSAX.EndObject();
+			fbJsonSAX.AddKey('weather');
+			fbJsonSAX.StartArray(); 
+			bSAXheader := TRUE;
+	END_IF
+	
+	IF NOT fbHttpClientOpenWeatherMap.bConfigured THEN 
+		fbHttpClientOpenWeatherMap.nHostPort := 443;
+		fbHttpClientOpenWeatherMap.stTLS.bNoServerCertCheck := TRUE;
+	END_IF
+	
+	
+	IF W_data.uLocIndex > 0 THEN
+		bGetOpenWeatherMap := TRUE;
+		IF fbHttpClientOpenWeatherMap.bConfigured THEN
+		fbHttpGetOpenWeatherMap(bSend := bGetOpenWeatherMap, fbClient := fbHttpClientOpenWeatherMap, refState := sState, W_data := W_data);
+		END_IF
+		fbHttpClientOpenWeatherMap.Execute();
+		IF W_data.allow_processing <> FALSE THEN
+			fbJsonSAX.StartObject();
+				fbJsonSAX.AddKey('city');
+				fbJsonSAX.AddString(W_data.city);
+				fbJsonSAX.AddKey('id');
+				fbJsonSAX.AddUdint(W_data.id);
+				fbJsonSAX.AddKey('temp');
+				fbJsonSAX.AddLreal(W_data.temp);
+				fbJsonSAX.AddKey('temp_min');
+				fbJsonSAX.AddLreal(W_data.temp_min);
+				fbJsonSAX.AddKey('temp_max');
+				fbJsonSAX.AddLreal(W_data.temp_max);
+				fbJsonSAX.AddKey('sunrise');
+				fbJsonSAX.AddUdint(W_data.sunrise);
+				fbJsonSAX.AddKey('sunset');
+				fbJsonSAX.AddUdint(W_data.sunset);
+				fbJsonSAX.EndObject();
+			W_data.allow_processing := FALSE;
+			W_data.uLocIndex := W_data.uLocIndex -1;
+		END_IF
+	ELSE
+		fbJsonSAX.EndArray(); 
+		fbJsonSAX.EndObject();
+		W_data.sJsonParsed := fbJsonSAX.GetDocument();
+		fbJsonSAX.CopyDocument(W_data.sJsonParsed, SIZEOF(W_data.sJsonParsed));
+		sState := DevStates.SENDING;
+	END_IF
+	
+END_IF
+
+(* SEND RESULTING JSON OBJECT *)
+IF sState = DevStates.SENDING THEN
+	W_data.uLocIndex := 0;(* FLUSH ARRAY *)
+	connect_mqtt(M_data := M_data);
+	//sPayloadPub := CONCAT('MyMessage', TO_STRING(i));
+		M_data.fbMqttClient.Publish(	sTopic:= M_data.sTopicPub, 
+								pPayload:= ADR(W_data.sJsonParsed), nPayloadSize:= LEN(W_data.sJsonParsed)+1, 
+								eQoS:= TcIotMqttQos.AtMostOnceDelivery, bRetain:= FALSE, bQueue:= FALSE );
+		IF M_data.fbMqttClient.bError THEN
+			// add your error logging here
+			M_data.hrErrorOccurred := M_data.fbMqttClient.hrErrorCode;
+		END_IF
+		sState := DevStates.RECEIVING;
+END_IF
+
+
+IF sState = DevStates.IDLE THEN
+	(* WASTE TIME *)
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="195" Count="23" />
+      <LineId Id="254" Count="0" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="220" Count="11" />
+      <LineId Id="306" Count="1" />
+      <LineId Id="311" Count="1" />
+      <LineId Id="314" Count="0" />
+      <LineId Id="317" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="318" Count="0" />
+      <LineId Id="316" Count="0" />
+      <LineId Id="319" Count="0" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="333" Count="1" />
+      <LineId Id="353" Count="0" />
+      <LineId Id="308" Count="1" />
+      <LineId Id="264" Count="4" />
+      <LineId Id="282" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="362" Count="1" />
+      <LineId Id="325" Count="0" />
+      <LineId Id="358" Count="0" />
+      <LineId Id="329" Count="0" />
+      <LineId Id="332" Count="0" />
+      <LineId Id="336" Count="12" />
+      <LineId Id="335" Count="0" />
+      <LineId Id="352" Count="0" />
+      <LineId Id="330" Count="0" />
+      <LineId Id="364" Count="0" />
+      <LineId Id="331" Count="0" />
+      <LineId Id="349" Count="0" />
+      <LineId Id="351" Count="0" />
+      <LineId Id="350" Count="0" />
+      <LineId Id="354" Count="2" />
+      <LineId Id="326" Count="0" />
+      <LineId Id="359" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="236" Count="1" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="238" Count="8" />
+      <LineId Id="277" Count="0" />
+      <LineId Id="248" Count="5" />
+      <LineId Id="82" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

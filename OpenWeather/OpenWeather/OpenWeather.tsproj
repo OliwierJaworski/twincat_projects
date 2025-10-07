@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.68">
+	<Project ProjectGUID="{6718E6E3-B708-435A-A7C0-54536A69984E}" Target64Bit="true" ShowHideConfigurations="#x6">
+		<System>
+			<Settings MaxCpus="12" NonWinCpus="2">
+				<Cpu CpuId="10"/>
+				<Cpu CpuId="11"/>
+			</Settings>
+			<Tasks>
+				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+			</Tasks>
+		</System>
+		<Plc>
+			<Project GUID="{7C283CD0-689F-4ABB-AFF2-3E3A94895FE1}" Name="mqtt_data_gathering" PrjFilePath="mqtt_data_gathering\mqtt_data_gathering.plcproj" TmcFilePath="mqtt_data_gathering\mqtt_data_gathering.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="mqtt_data_gathering\mqtt_data_gathering.tmc" TmcHash="{0309880A-8A8A-3F0A-0A5E-2E64F8208A68}">
+					<Name>mqtt_data_gathering Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Contexts>
+						<Context>
+							<Id>0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010030</OTCID>
+							</ManualConfig>
+							<Priority>20</Priority>
+							<CycleTime>10000000</CycleTime>
+						</Context>
+					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="20" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+		</Plc>
+	</Project>
+</TcSmProject>

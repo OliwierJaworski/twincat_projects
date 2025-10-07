@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="location_PushBack" Id="{3dc8d68d-c871-4f2d-a1a8-bdd3872ba2d7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION location_PushBack : string
+VAR_INPUT
+	refdata : REFERENCE TO weather_data;
+	refinput : REFERENCE TO STRING;
+END_VAR
+VAR
+    nCommaPos : INT;
+    nLen      : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* FUNC checks if provided string format is correct.*)
+nCommaPos := FIND(refinput, ','); // returns 0 if not found
+IF nCommaPos = 0 THEN
+    RETURN;
+END_IF
+
+// Check length after comma
+nLen := LEN(refinput);
+IF (nLen - nCommaPos) = 2 THEN
+	refdata.uLocIndex :=  refdata.uLocIndex + 1;
+    refdata.sLocation[refdata.uLocIndex] := refinput;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="location_PushBack">
+      <LineId Id="41" Count="0" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="22" Count="3" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

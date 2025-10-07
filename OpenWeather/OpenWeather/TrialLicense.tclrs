@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
+	<LicenseInfo>
+		<SystemId>{10002149-1D52-257B-19F6-4074617B0F2B}</SystemId>
+		<IssueTime>2025-10-06T23:59:00</IssueTime>
+		<ExpireTime>2025-10-14T00:00:00</ExpireTime>
+		<LicenseKey>69d712067e07aa57c27c3f8435d91b2e8ecbb041016237d679fafe563372bb1c75ee6f3cf4fa9ca18ad644a4c8928742ddff6fc44832d0561944b8e1af25ae6b86dd295b2cde854f6f6220d6ad8ef0752d7cec4a7e1b6e55b021a51b563ff52e5744f3c938a4809e43cef3a920172e6b701b501959d60f03793abdb70dbc43a2a6cfef8926714690f3aac1e7c653ffa44e3a3bcea5c8f9447894b387092480575a6ca1aa6e4c92ac8d07b6ccef9fb08e563812fc57bdd41344c2e14a8eab10c358245d2619dbff37cfc48292d06ed216803a1e7703c3ee817708dc1d22b79f5ae05a724f847726b161f3869cd24994cb1c5ee1b406b4d56e01d4f854daaba4b9</LicenseKey>
+		<License>
+			<LicenseId>{70A64701-DC70-4557-B425-EC0B67E22215}</LicenseId>
+			<Name>TC3 IoT HTTP Protocol</Name>
+		</License>
+		<License>
+			<LicenseId>{42E60F0D-E1AD-4B78-84B8-FD3ECF44FAA7}</LicenseId>
+			<Name>TC3 IoT HTTPS/REST</Name>
+			<OrderNo>TF6760</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{4C256767-E6E6-4AF5-BD68-9F7ABAD0C200}</LicenseId>
+			<Name>TC3 ADS</Name>
+			<OrderNo>TC1000</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3FF18E97-7754-401B-93FB-70544DE28A13}</LicenseId>
+			<Name>TC3 IO</Name>
+			<OrderNo>TC1100</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{66689887-CCBD-452C-AC9A-039D997C6E66}</LicenseId>
+			<Name>TC3 PLC</Name>
+			<OrderNo>TC1200</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{973BA0B1-AADD-41C1-B518-302802473922}</LicenseId>
+			<Name>TC3 IoT MQTT Protocol</Name>
+		</License>
+		<License>
+			<LicenseId>{0ABFD2B0-EAE1-4DC7-AABE-03093B0786B7}</LicenseId>
+			<Name>TC3 IoT Communication (MQTT)</Name>
+			<OrderNo>TF6701</OrderNo>
+		</License>
+	</LicenseInfo>
+</TcLicenseInfo>

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="setup_mqtt" Id="{a71cbf56-7b29-4570-9d37-49efdf01cd6a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION setup_mqtt : DevStates
+VAR_INPUT
+	refUser : REFERENCE TO weather_data;
+	refMqtt : REFERENCE TO mqtt_data;
+	refState: REFERENCE TO DevStates;
+END_VAR
+VAR_OUTPUT
+	out : DevStates;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[refMqtt.bSetParameter := FALSE;
+refMqtt.fbMqttClient.sHostName:= '3af27b0972ae4f52a828b3b86b9213d0.s1.eu.hivemq.cloud';
+refMqtt.fbMqttClient.nHostPort:= 8883;
+refMqtt.fbMqttClient.sClientId:= 'test_user';
+refMqtt.fbMqttClient.sUserName:= 'test_user';
+refMqtt.fbMqttClient.sUserPassword:= 'Test_user01!'; 
+refMqtt.fbMqttClient.nKeepAlive:= 60;
+refMqtt.fbMqttClient.sTopicPrefix:= ''; 
+refMqtt.fbMqttClient.stTLS.bNoServerCertCheck :=  TRUE;
+refMqtt.fbMqttClient.ipMessageQueue := refMqtt.fbMessageQueue;
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="setup_mqtt">
+      <LineId Id="16" Count="9" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

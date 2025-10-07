@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <DUT Name="mqtt_data" Id="{133500e5-46de-4ae1-bc35-70a5076c24a7}">
+    <Declaration><![CDATA[TYPE mqtt_data :
+STRUCT
+	fbMqttClient : FB_IotMqttClient;
+	bSetParameter : BOOL := TRUE;
+	bConnect : BOOL := TRUE;
+	
+	(* published message *)
+	sTopicPub : STRING(255) := 'testtopic/out';
+	sPayloadPub : STRING(255);
+	
+	
+	(* received message *)
+	bSubscribed : BOOL;
+	sTopicSub : STRING(255) := 'testtopic/in';
+	{attribute 'TcEncoding':='UTF-8'}
+	sTopicRcv : STRING(255);
+	{attribute 'TcEncoding':='UTF-8'}
+	sPayloadRcv : STRING(255);
+	fbMessageQueue : FB_IotMqttMessageQueue;
+	fbMessage : FB_IotMqttMessage;
+	
+	hrErrorOccurred : HRESULT; // contains the latest occurred error
+	btimeout: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

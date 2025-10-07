@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <DUT Name="DevStates" Id="{df7e0902-f6aa-4a26-afad-39b511212b96}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DevStates :
+(
+	NOOP := 0,
+	IDLE,
+ 	RECEIVING,
+	PROC,
+	SENDING,
+	ERR
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
